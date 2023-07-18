@@ -1,5 +1,6 @@
 ARG  FROMIMAGE=cp.icr.io/cp/appc/ace-server-prod@sha256:c41154c17a30bbbb6e1e4593c965f49ef3c86260e71143b8f33a6fbca277a3b9
-FROM image-registry.openshift-image-registry.svc.cluster.local:5000/default/ace-server-prod:12.0.8.0-r1
+# FROM image-registry.openshift-image-registry.svc.cluster.local:5000/default/ace-server-prod:12.0.8.0-r1
+FROM ${FROMIMAGE}
 
 USER root
 
