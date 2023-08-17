@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: ace-build-and-deploy-1
+  labels:
+    tekton.dev/pipeline: ace-build-and-deploy
+spec:
+  params:
+    - name: deployment-name
+      value: data-converter-app
+    - name: git-url
+      value: 'https://github.com/trevor-dolby-at-ibm-com/data-converter-app.git'
+    - name: git-revision
+      value: main
+    - name: IMAGE
+      value: image-registry.openshift-image-registry.svc.cluster.local:5000/default/data-converter-service
+  pipelineRef:
+    name: ace-build-and-deploy
+  serviceAccountName: pipeline
+  timeout: 1h0m0s
+  workspaces:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: source-pvc
+    - name: dockerconfig-ws
+      secret:
+        secretName: dockerconfig-secret

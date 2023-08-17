@@ -1,0 +1,51 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-is
+spec:
+  params:
+    - description: reference of the image buildah produced.
+      name: IMAGE
+      type: string
+    - default: is-quickstart
+      description: IntegrationServer CR name
+      name: deployment-name
+      type: string
+  steps:
+    - image: 'quay.io/openshift/origin-cli:latest'
+      name: deploy
+      resources: {}
+      script: |
+        cat << EOF | oc apply -f -
+          apiVersion: appconnect.ibm.com/v1beta1
+          kind: IntegrationServer
+          metadata:
+            name: $(params.deployment-name)
+          spec:
+            license:
+              accept: true
+              license: L-MJTK-WUU8HE
+              use: AppConnectEnterpriseNonProductionFREE
+            pod:
+              containers:
+                runtime:
+                  image: $(params.IMAGE)
+                  imagePullPolicy: Always
+                  resources:
+                    limits:
+                      cpu: 300m
+                      memory: 368Mi
+                    requests:
+                      cpu: 300m
+                      memory: 368Mi
+            router:
+              timeout: 120s
+            service:
+              endpointType: http
+            adminServerSecure: true
+            createDashboardUsers: true
+            designerFlowsOperationMode: disabled
+            enableMetrics: true
+            replicas: 1
+            version: 12.0.8.0-r1
+        EOF
